@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vanden Borre - Stocktelling Medewerkers</title>
+    <!-- FontAwesome voor iconen (vergelijkbaar met de site) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --vb-red: #e30613;
+            --vb-dark-red: #b3050f;
+            --vb-grey-bg: #f4f4f4;
+            --vb-text: #333;
+            --vb-border: #ddd;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #fff;
+            color: var(--vb-text);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* --- HEADER --- */
+        header {
+            display: flex;
+            align-items: center;
+            padding: 15px 30px;
+            border-bottom: 1px solid var(--vb-border);
+            background: white;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-container {
+            display: flex;
+            flex-direction: column;
+            margin-right: 40px;
+            cursor: pointer;
+        }
+
+        .logo-text {
+            color: var(--vb-red);
+            font-weight: 800;
+            font-size: 28px;
+            line-height: 1;
+        }
+
+        .logo-sub {
+            color: var(--vb-red);
+            font-size: 12px;
+            font-weight: 600;
+            text-align: right;
+        }
+
+        .search-bar {
+            flex-grow: 1;
+            max-width: 600px;
+            display: flex;
+            border: 1px solid var(--vb-border);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-right: 40px;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 10px 15px;
+            border: none;
+            outline: none;
+            background: #f9f9f9;
+        }
+
+        .search-bar button {
+            background: #f9f9f9;
+            border: none;
+            padding: 0 15px;
+            cursor: pointer;
+            color: #555;
+        }
+
+        .header-icons {
+            display: flex;
+            gap: 25px;
+            margin-left: auto;
+        }
+
+        .icon-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 11px;
+            color: #333;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .icon-item i {
+            font-size: 18px;
+            margin-bottom: 4px;
+        }
+
+        /* --- LAYOUT --- */
+        .container {
+            display: flex;
+            max-width: 1400px;
+            margin: 20px auto;
+            width: 100%;
+            padding: 0 20px;
+            gap: 30px;
+        }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: 260px;
+            flex-shrink: 0;
+        }
+
+        .menu-list {
+            list-style: none;
+        }
+
+        .menu-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 15px;
+            color: #444;
+        }
+
+        .menu-item:hover {
+            background-color: var(--vb-grey-bg);
+            color: var(--vb-red);
+        }
+
+        .menu-item i.left-icon {
+            width: 25px;
+            color: var(--vb-red);
+            margin-right: 10px;
+        }
+
+        .menu-item i.right-icon {
+            font-size: 10px;
+            color: #999;
+        }
+
+        .menu-title {
+            font-weight: bold;
+            margin: 20px 0 10px 15px;
+            font-size: 18px;
+        }
+
+        /* --- MAIN CONTENT --- */
+        .main-content {
+            flex-grow: 1;
+        }
+
+        /* --- BANNER --- */
+        .promo-banner {
+            background: linear-gradient(90deg, #eee 0%, var(--vb-red) 50%);
+            border-radius: 10px;
+            padding: 20px 40px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            min-height: 120px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .promo-banner h2 {
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+        
+        .promo-banner p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .promo-btn {
+            background: white;
+            color: var(--vb-red);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        /* --- STOCK FORMULIER --- */
+        .stock-section {
+            background: white;
+            border: 1px solid var(--vb-border);
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--vb-grey-bg);
+            padding-bottom: 15px;
+        }
+
+        .section-header h2 {
+            color: var(--vb-red);
+            font-size: 24px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+            background: var(--vb-grey-bg);
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        .form-group input, .form-group select {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .btn-add {
+            background-color: var(--vb-red);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            height: 100%; /* Om de input hoogte te vullen */
+            margin-top: 17px; /* Uitlijnen met inputs */
+            transition: background 0.2s;
+        }
+
+        .btn-add:hover {
+            background-color: var(--vb-dark-red);
+        }
+
+        /* --- TABEL --- */
+        .stock-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .stock-table th {
+            text-align: left;
+            padding: 12px;
+            background-color: #f9f9f9;
+            border-bottom: 2px solid var(--vb-border);
+            color: #555;
+            font-size: 13px;
+            text-transform: uppercase;
+        }
+
+        .stock-table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--vb-border);
+            font-size: 14px;
+        }
+
+        .stock-table tr:hover {
+            background-color: #fffbfb;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status-ok {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status-warning {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .btn-delete {
+            color: #999;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 16px;
+        }
+        .btn-delete:hover {
+            color: var(--vb-red);
+        }
+
+        /* --- FOOTER ACTIONS --- */
+        .footer-actions {
+            margin-top: 30px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+        }
+
+        .btn-secondary {
+            background: white;
+            border: 1px solid var(--vb-red);
+            color: var(--vb-red);
+            padding: 12px 25px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            background: var(--vb-red);
+            border: 1px solid var(--vb-red);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-primary:hover {
+            background: var(--vb-dark-red);
+        }
+
+        /* Feedback knop rechtsonder (visueel) */
+        .feedback-tab {
+            position: fixed;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--vb-red);
+            color: white;
+            padding: 15px 5px;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            border-radius: 5px 0 0 5px;
+            font-size: 12px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header>
+        <div class="logo-container">
+            <div class="logo-text">Vanden Borre</div>
+            <div class="logo-sub">voor 't leven</div>
+        </div>
+
+        <div class="search-bar">
+            <input type="text" placeholder="Zoek product, EAN of locatie...">
+            <button><i class="fas fa-search"></i></button>
+        </div>
+
+        <div class="header-icons">
+            <div class="icon-item">
+                <i class="far fa-user"></i>
+                <span>Account</span>
+            </div>
+            <div class="icon-item">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>Winkels</span>
+            </div>
+            <div class="icon-item">
+                <i class="fas fa-globe"></i>
+                <span>Taal</span>
+            </div>
+            <div class="icon-item">
+                <i class="fas fa-shopping-cart"></i>
+                <span>Cart</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <ul class="menu-list">
+                <li class="menu-item"><i class="fas fa-tv left-icon"></i> Tv en audio <i class="fas fa-chevron-right right-icon"></i></li>
+                <li class="menu-item"><i class="fas fa-tshirt left-icon"></i> Groot elektro <i class="fas fa-chevron-right right-icon"></i></li>
+                <li class="menu-item"><i class="fas fa-utensils left-icon"></i> Keuken <i class="fas fa-chevron-right right-icon"></i></li>
+                <li class="menu-item"><i class="fas fa-broom left-icon"></i> Huishouden <i class="fas fa-chevron-right right-icon"></i></li>
+                <li class="menu-item"><i class="fas fa-laptop left-icon"></i> Multimedia <i class="fas fa-chevron-right right-icon"></i></li>
+                <li class="menu-item"><i class="fas fa-mobile-alt left-icon"></i> Telefonie <i class="fas fa-chevron-right right-icon"></i></li>
+            </ul>
+
+            <div class="menu-title">In de kijker</div>
+            <ul class="menu-list">
+                <li class="menu-item"><i class="fas fa-star left-icon"></i> Samsung Galaxy Tab</li>
+                <li class="menu-item"><i class="fas fa-star left-icon"></i> Actie van Vertrouwen</li>
+            </ul>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            
+            <!-- Banner (Ingeleverd met Stocktelling thema) -->
+            <div class="promo-banner">
+                <div>
+                    <h2>Stocktelling & Inventaris</h2>
+                    <p>Voer de getelde aantallen in voor de jaarlijkse inventaris.</p>
+                </div>
+                <button class="promo-btn">Handleiding Stocktelling</button>
+            </div>
+
+            <!-- Stock Formulier -->
+            <section class="stock-section">
+                <div class="section-header">
+                    <h2>Nieuwe Telling Toevoegen</h2>
+                    <span style="font-size: 14px; color: #666;">Medewerker: Jan Janssens</span>
+                </div>
+
+                <form id="stockForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Productnaam</label>
+                            <input type="text" id="productName" placeholder="Bv. Braun Scheerapparaat" required>
+                        </div>
+                        <div class="form-group">
+                            <label>EAN / SKU Code</label>
+                            <input type="text" id="productCode" placeholder="54123456789" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Aantal Geteld</label>
+                            <input type="number" id="productQty" min="0" placeholder="0" required>
+                        </div>
+                        <button type="submit" class="btn-add"><i class="fas fa-plus"></i> Toevoegen</button>
+                    </div>
+                </form>
+
+                <table class="stock-table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Code</th>
+                            <th>Aantal</th>
+                            <th>Status</th>
+                            <th>Actie</th>
+                        </tr>
+                    </thead>
+                    <tbody id="stockTableBody">
+                        <!-- Hier komen de rijen dynamisch -->
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: #999; padding: 20px;">Nog geen producten geteld.</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="footer-actions">
+                    <button class="btn-secondary" onclick="clearList()">Lijst Wissen</button>
+                    <button class="btn-primary" onclick="exportJSON()"><i class="fas fa-download"></i> Exporteer JSON</button>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <div class="feedback-tab">Feedback</div>
+
+    <!-- JAVASCRIPT LOGICA -->
+    <script>
+        // De JSON data structuur
+        let stockData = [];
+
+        const form = document.getElementById('stockForm');
+        const tableBody = document.getElementById('stockTableBody');
+
+        // Functie om de tabel te renderen op basis van de JSON data
+        function renderTable() {
+            tableBody.innerHTML = '';
+
+            if (stockData.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #999; padding: 20px;">Nog geen producten geteld.</td></tr>`;
+                return;
+            }
+
+            stockData.forEach((item, index) => {
+                const row = document.createElement('tr');
+                
+                // Bepaal status kleur (voorbeeld logica)
+                let statusClass = item.qty > 0 ? 'status-ok' : 'status-warning';
+                let statusText = item.qty > 0 ? 'In Stock' : 'Nakijken';
+
+                row.innerHTML = `
+                    <td><strong>${item.name}</strong></td>
+                    <td>${item.code}</td>
+                    <td>${item.qty}</td>
+                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                    <td><button class="btn-delete" onclick="removeItem(${index})"><i class="fas fa-trash"></i></button></td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Item toevoegen
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const name = document.getElementById('productName').value;
+            const code = document.getElementById('productCode').value;
+            const qty = document.getElementById('productQty').value;
+
+            const newItem = {
+                id: Date.now(), // Uniek ID
+                name: name,
+                code: code,
+                qty: parseInt(qty),
+                timestamp: new Date().toISOString()
+            };
+
+            stockData.push(newItem);
+            
+            // Reset form
+            form.reset();
+            
+            // Update tabel
+            renderTable();
+        });
+
+        // Item verwijderen
+        function removeItem(index) {
+            if(confirm("Weet je zeker dat je dit item wilt verwijderen?")) {
+                stockData.splice(index, 1);
+                renderTable();
+            }
+        }
+
+        // Lijst wissen
+        function clearList() {
+            if(confirm("Ben je zeker? Alle getelde data gaat verloren.")) {
+                stockData = [];
+                renderTable();
+            }
+        }
+
+        // Exporteren naar JSON bestand
+        function exportJSON() {
+            if (stockData.length === 0) {
+                alert("Er is geen data om te exporteren.");
+                return;
+            }
+
+            const dataStr = JSON.stringify(stockData, null, 2);
+            const blob = new Blob([dataStr], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `stocktelling_vandenborre_${new Date().toISOString().slice(0,10)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Initieel renderen
+        renderTable();
+    </script>
+</body>
+</html>
